@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Condomínio Smart – casas que acendem quando você chega</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;700;800&display=swap">
+<style>
+  :root {
+    --bg:#f3f5f2; --panel:#ffffff; --ink:#12292b; --muted:#4f6568; --line:#d6dfdb; --teal:#0e7c6b; --teal-soft:#d9efe9; --amber:#f5b700; --amber-soft:#fff1c2; --gray-soft:#e6e9e8;
+    box-sizing:border-box; padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg:#0f1a1b; --panel:#162526; --ink:#e6efec; --muted:#97adab; --line:#25393a; --teal:#3fc7ae; --teal-soft:#16393a; --amber:#ffc83a; --amber-soft:#4a3d12; --gray-soft:#233233; }
+  }
+  :root[data-theme="dark"] { --bg:#0f1a1b; --panel:#162526; --ink:#e6efec; --muted:#97adab; --line:#25393a; --teal:#3fc7ae; --teal-soft:#16393a; --amber:#ffc83a; --amber-soft:#4a3d12; --gray-soft:#233233; }
+  html { scroll-behavior:smooth; scroll-padding-top:calc(env(safe-area-inset-top,0px) + 64px); }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font:17px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif; }
+  h1, h2, h3, .brand, .big { font-family:"Bricolage Grotesque","Trebuchet MS",system-ui,sans-serif; letter-spacing:-.02em; }
+  a { color:var(--teal); }
+  .wrap { max-width:1120px; margin:0 auto; padding:0 20px; }
+  header { position:sticky; top:0; z-index:5; background:color-mix(in srgb, var(--bg) 88%, transparent); backdrop-filter:blur(8px); border-bottom:1px solid var(--line); }
+  header .wrap { display:flex; align-items:center; gap:18px; height:60px; }
+  .brand { font-weight:800; font-size:1.15rem; margin-right:auto; }
+  nav { display:flex; gap:18px; overflow-x:auto; font-size:.95rem; } nav a { text-decoration:none; color:var(--muted); white-space:nowrap; } nav a:hover { color:var(--ink); }
+  section { padding:72px 0; }
+  h2 { font-size:clamp(1.8rem,4vw,2.6rem); line-height:1.1; margin:0 0 16px; font-weight:800; }
+  p { margin:0 0 14px; max-width:62ch; } .lead { font-size:1.15rem; color:var(--muted); }
+  .hero { padding:56px 0 40px; }
+  .hero .wrap { display:grid; grid-template-columns:1.05fr 1fr; gap:36px; align-items:center; }
+  @media (max-width:860px) { .hero .wrap { grid-template-columns:1fr; } }
+  h1 { font-size:clamp(2.4rem,6vw,4.1rem); line-height:1.02; margin:0 0 18px; font-weight:800; }
+  .btns { display:flex; flex-wrap:wrap; gap:10px; margin:22px 0; }
+  button, .btn { font:inherit; font-weight:600; border-radius:10px; padding:11px 18px; border:2px solid var(--ink); background:transparent; color:var(--ink); cursor:pointer; text-decoration:none; display:inline-block; }
+  .btn.pri, button.pri { background:var(--ink); color:var(--bg); } button:focus-visible, a:focus-visible, input:focus-visible { outline:3px solid var(--amber); outline-offset:2px; }
+  .tags { display:flex; flex-wrap:wrap; gap:10px; }
+  .tag { background:var(--panel); border:1px solid var(--line); border-radius:10px; padding:8px 14px; font-size:.95rem; } .tag b { font-family:"Bricolage Grotesque",system-ui,sans-serif; font-size:1.25rem; display:block; line-height:1.2; }
+  .map { background:var(--panel); border:1px solid var(--line); border-radius:16px; padding:10px; }
+  .map svg { display:block; width:100%; height:auto; } .map small { display:block; color:var(--muted); font-size:.85rem; padding:4px 6px 0; min-height:2.6em; }
+  .h { fill:var(--gray-soft); stroke:var(--muted); stroke-width:1.5; transition:fill .4s; } .h.s { fill:var(--teal-soft); stroke:var(--teal); } .h.lit, .mk.lit { fill:var(--amber); stroke:var(--amber); }
+  .mk { fill:var(--panel); stroke:var(--teal); stroke-width:2; transition:fill .4s; } .rd { fill:var(--line); } .lz { fill:color-mix(in srgb, var(--teal) 14%, var(--panel)); }
+  .mt { font-size:11px; font-weight:700; text-anchor:middle; dominant-baseline:middle; fill:var(--ink); font-family:system-ui,sans-serif; } .mt.m { fill:var(--muted); font-size:9px; font-weight:600; }
+  .stats { display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:0; border-top:2px solid var(--ink); margin-top:28px; }
+  .stats div { padding:16px 0; border-bottom:1px solid var(--line); } .stats b { font-family:"Bricolage Grotesque",system-ui,sans-serif; font-size:2.4rem; line-height:1; display:block; } .stats span { color:var(--muted); font-size:.95rem; }
+  .tl { list-style:none; margin:26px 0 0; padding:0; border-left:3px solid var(--teal); max-width:760px; }
+  .tl li { position:relative; padding:0 0 26px 26px; } .tl li::before { content:""; position:absolute; left:-11px; top:7px; width:19px; height:19px; border-radius:50%; background:var(--amber); border:3px solid var(--bg); }
+  .tl h3 { margin:0 0 2px; font-size:1.25rem; } .tl p { margin:0; color:var(--muted); }
+  .split { display:grid; grid-template-columns:1fr 1fr; gap:40px; align-items:start; } @media (max-width:820px) { .split { grid-template-columns:1fr; gap:22px; } }
+  .gates { border:1px solid var(--line); border-radius:14px; background:var(--panel); } .gates div { padding:16px 20px; border-bottom:1px solid var(--line); } .gates div:last-child { border:0; } .gates b { display:block; }
+  .note { border-left:4px solid var(--amber); padding:8px 14px; background:var(--amber-soft); border-radius:0 10px 10px 0; font-size:.95rem; max-width:62ch; }
+  .band { background:var(--ink); color:var(--bg); } .band .lead, .band p { color:color-mix(in srgb, var(--bg) 78%, var(--ink)); }
+  .toggle { display:flex; gap:10px; margin:18px 0; } .band button { border-color:var(--bg); color:var(--bg); } .band button[aria-pressed="true"] { background:var(--amber); color:#12292b; border-color:var(--amber); }
+  .state { display:flex; gap:14px; flex-wrap:wrap; } .pill { border:2px solid color-mix(in srgb, var(--bg) 40%, var(--ink)); border-radius:14px; padding:14px 18px; min-width:190px; transition:all .3s; } .pill.on { background:var(--amber); border-color:var(--amber); color:#12292b; } .pill b { display:block; font-size:1.15rem; }
+  .price { display:grid; grid-template-columns:1fr 1fr; border:2px solid var(--ink); border-radius:18px; overflow:hidden; background:var(--panel); } @media (max-width:760px) { .price { grid-template-columns:1fr; } }
+  .price > div { padding:28px; } .price .a { background:var(--teal-soft); border-right:2px solid var(--ink); } @media (max-width:760px) { .price .a { border-right:0; border-bottom:2px solid var(--ink); } }
+  .big { font-size:clamp(2.4rem,6vw,3.6rem); font-weight:800; line-height:1; margin:8px 0 14px; } .price ul { margin:0; padding-left:20px; color:var(--muted); } .price li { margin:4px 0; }
+  .calc { margin-top:26px; padding:22px 24px; border:1px solid var(--line); border-radius:14px; background:var(--panel); } .calc input { width:100%; accent-color:var(--teal); } .calc output b { font-family:"Bricolage Grotesque",system-ui,sans-serif; font-size:1.9rem; }
+  footer { border-top:1px solid var(--line); padding:34px 0 48px; color:var(--muted); font-size:.92rem; } footer .wrap { display:flex; flex-wrap:wrap; gap:14px 28px; justify-content:space-between; }
+  @media (prefers-reduced-motion:reduce) { html { scroll-behavior:auto; } .h, .mk, .pill { transition:none; } }
+</style>
+</head>
+<body>
+<header><div class="wrap"><span class="brand">Condomínio Smart</span>
+  <nav aria-label="Seções"><a href="#dia">A casa</a><a href="#seguranca">Segurança</a><a href="#mercadinho">Mercadinho</a><a href="#precos">Preços</a></nav></div></header>
+
+<main>
+<section class="hero"><div class="wrap">
+  <div>
+    <h1>Casas que acendem quando você chega.</h1>
+    <p class="lead">Um condomínio de 10 casas: 8 smart home e 2 casas comuns. Reconhecimento facial nas guaritas e um mercadinho que liga a luz e o ar quando o cliente entra.</p>
+    <div class="btns"><button class="pri" id="sim" type="button">Simular chegada</button><a class="btn" href="#precos">Ver os preços</a></div>
+    <div class="tags"><div class="tag"><b>R$ 350 mil</b>casa smart home</div><div class="tag"><b>R$ 300 mil</b>casa comum</div></div>
+  </div>
+  <div class="map"><svg id="map" viewBox="0 0 600 540" role="img" aria-label="Mapa do condomínio com 10 casas, 2 guaritas e o mercadinho"></svg>
+    <small id="mapnote">Toque em Simular chegada para ver a Casa 03 e o mercadinho reagirem.</small></div>
+</div></section>
+
+<section><div class="wrap">
+  <h2>Uma ideia simples: a casa cuida do resto.</h2>
+  <p class="lead">Sensores percebem quem está em cada cômodo e atuadores acendem luzes, ligam a TV e trancam a porta. Tudo roda em um hub local, sem depender da internet.</p>
+  <div class="stats">
+    <div><b>10</b><span>casas de 108 m²</span></div><div><b>8</b><span>com automação completa</span></div>
+    <div><b>2</b><span>guaritas de segurança</span></div><div><b>3</b><span>leitores faciais</span></div><div><b>1</b><span>mercadinho inteligente</span></div>
+  </div>
+</div></section>
+
+<section id="dia" style="padding-top:20px"><div class="wrap">
+  <h2>Um dia na casa smart home</h2>
+  <p class="lead">Cada casa tem suíte, quarto, banheiro social, sala e cozinha, com 12 sensores e 11 atuadores.</p>
+  <ol class="tl">
+    <li><h3>Você chega</h3><p>A guarita reconhece seu rosto e abre a cancela. Em casa, a porta destranca e a luz da sala acende.</p></li>
+    <li><h3>Entra na cozinha</h3><p>O sensor de presença liga a luz. A mesma regra vale para a sala e os quartos.</p></li>
+    <li><h3>Senta no sofá</h3><p>A TV liga sozinha.</p></li>
+    <li><h3>Deita na cama</h3><p>O sensor sob o colchão percebe e apaga a luz do quarto ou da suíte.</p></li>
+    <li><h3>Sai de casa</h3><p>Apaga tudo, desliga TV e ares-condicionados e tranca a porta.</p></li>
+  </ol>
+</div></section>
+
+<section id="seguranca" style="background:var(--panel);border-block:1px solid var(--line)"><div class="wrap split">
+  <div>
+    <h2>Segurança que reconhece você</h2>
+    <p class="lead">Moradores cadastrados passam direto. Visitantes e entregas são validados pelo porteiro, que confirma com o morador antes de liberar.</p>
+    <p class="note">O rosto é um dado biométrico: o cadastro exige consentimento de cada morador, o processamento é local e existe sempre uma alternativa por cartão ou app.</p>
+  </div>
+  <div class="gates">
+    <div><b>Guarita 1: acesso principal</b>Duas faixas, entrada e saída, cada uma com leitor facial e cancela automática.</div>
+    <div><b>Guarita 2: serviço e saída</b>Entregas e prestadores, com leitor facial e cancela.</div>
+    <div><b>Portaria sob controle</b>Alertas em tempo real quando um rosto desconhecido chega.</div>
+  </div>
+</div></section>
+
+<section id="mercadinho" class="band"><div class="wrap">
+  <h2>Mercadinho que se prepara para você</h2>
+  <p class="lead">Um mercado pequeno dentro do condomínio. Quando alguém chega à porta, a luz e o ar-condicionado ligam. Sem ninguém por 5 minutos, desligam.</p>
+  <div class="toggle" role="group" aria-label="Simular o mercadinho"><button type="button" aria-pressed="true" data-c="0">Sem cliente</button><button type="button" aria-pressed="false" data-c="1">Cliente chega</button></div>
+  <div class="state"><div class="pill" id="pl"><b>Luz</b><span>apagada</span></div><div class="pill" id="pa"><b>Ar-condicionado</b><span>desligado</span></div></div>
+</div></section>
+
+<section id="precos"><div class="wrap">
+  <h2>Preços</h2>
+  <p class="lead">As duas casas têm o mesmo tamanho. A diferença é a automação e o conforto que vem com ela.</p>
+  <div class="price">
+    <div class="a"><h3>Casa smart home</h3><div class="big">R$ 350 mil</div>
+      <ul><li>108 m²: suíte, quarto, banheiro social, sala e cozinha</li><li>12 sensores e 11 atuadores</li><li>Luz, TV, ares e fechadura automáticos</li><li>Comandos por voz e app</li><li>Acesso ao condomínio por reconhecimento facial</li></ul></div>
+    <div><h3>Casa comum</h3><div class="big">R$ 300 mil</div>
+      <ul><li>108 m² com o mesmo programa de cômodos</li><li>Interruptores e controles manuais</li><li>Acesso ao condomínio por reconhecimento facial</li><li>Pode virar smart depois com um kit de cerca de R$ 12.930, já com instalação</li></ul></div>
+  </div>
+  <p style="margin-top:14px;color:var(--muted)">A diferença é de R$ 50 mil por casa.</p>
+  <div class="calc">
+    <label for="n"><b>Quantas das 10 casas serão smart home?</b></label>
+    <input id="n" type="range" min="0" max="10" value="8" aria-describedby="out">
+    <output id="out" for="n"></output>
+  </div>
+</div></section>
+</main>
+
+<footer><div class="wrap">
+  <span>Projeto conceitual. Valores e imagens ilustrativos, sujeitos a confirmação.</span>
+  <span><a href="https://claude.ai/artifact/W29KesFhH77z5h2pg9Ctaw" target="_blank" rel="noopener">Planta interativa do condomínio</a> · <a href="https://claude.ai/artifact/KjB5tvJXgjT8LMNVsKaw6o" target="_blank" rel="noopener">Projeto da casa smart</a></span>
+</div></footer>
+
+<script>
+(function () {
+  var NS = "http://www.w3.org/2000/svg", svg = document.getElementById("map"), S = 6;
+  function el(t, a, x) { var e = document.createElementNS(NS, t); for (var k in a) e.setAttribute(k, a[k]); if (x !== undefined) e.textContent = x; svg.appendChild(e); return e; }
+  function R(x, y, w, h, c) { return el("rect", { x: x * S, y: (90 - y - h) * S, width: w * S, height: h * S, rx: 4, "class": c }); }
+  function T(s, x, y, c) { el("text", { x: x * S, y: (90 - y) * S, "class": "mt " + (c || "") }, s); }
+  R(44, 0, 12, 90, "rd"); R(12, 4, 28, 12, "lz"); T("área de lazer", 26, 10, "m");
+  var houses = {}, rows = [20, 32, 44, 56, 68];
+  rows.forEach(function (ly, i) {
+    [[28, i + 1], [58, i + 6]].forEach(function (p) {
+      var n = p[1], smart = n !== 4 && n !== 9;
+      houses[n] = R(p[0], ly + 1.5, 14, 9, "h" + (smart ? " s" : "")); T(String(n), p[0] + 7, ly + 6, "");
+    });
+  });
+  R(48.5, 1.5, 3, 5, "mk"); R(48.5, 84, 3, 5, "mk"); T("G1", 50, 9, "m"); T("G2", 50, 82, "m");
+  var mk = R(60, 5, 24, 10, "mk"); T("mercadinho", 72, 10, "m");
+  var on = false, note = document.getElementById("mapnote"), btn = document.getElementById("sim");
+  btn.addEventListener("click", function () {
+    on = !on; houses[3].classList.toggle("lit", on); mk.classList.toggle("lit", on);
+    btn.textContent = on ? "Reiniciar" : "Simular chegada";
+    note.textContent = on ? "A guarita reconheceu o morador, a Casa 03 acendeu a luz da sala e o mercadinho recebeu um cliente." : "Toque em Simular chegada para ver a Casa 03 e o mercadinho reagirem.";
+  });
+  var pl = document.getElementById("pl"), pa = document.getElementById("pa");
+  document.querySelectorAll("[data-c]").forEach(function (b) {
+    b.addEventListener("click", function () {
+      var c = b.dataset.c === "1";
+      document.querySelectorAll("[data-c]").forEach(function (x) { x.setAttribute("aria-pressed", x === b ? "true" : "false"); });
+      pl.classList.toggle("on", c); pa.classList.toggle("on", c);
+      pl.lastChild.textContent = c ? "acesa" : "apagada"; pa.lastChild.textContent = c ? "ligado" : "desligado";
+    });
+  });
+  var n = document.getElementById("n"), out = document.getElementById("out");
+  function brl(v) { return v.toLocaleString("pt-BR", { style: "currency", currency: "BRL", maximumFractionDigits: 0 }); }
+  function calc() { var k = +n.value; out.innerHTML = k + " smart e " + (10 - k) + " comuns: <b>" + brl(k * 350000 + (10 - k) * 300000) + "</b>"; }
+  n.addEventListener("input", calc); calc();
+})();
+</script>
+</body>
+</html>

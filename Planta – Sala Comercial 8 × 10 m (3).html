@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Planta – Sala Comercial 8 × 10 m</title>
+<style>
+  :root {
+    --bg:#f6f5f1; --paper:#ffffff; --ink:#1f2328; --muted:#5c6570; --line:#d9d6cc;
+    --wall:#2b2f36; --furn:#2f6f9f; --furn-fill:#e8f1f8; --equip:#1d4ed8; --door:#15803d;
+    --net:#d12c2c; --dim:#a21caf; --label:#8a5a00; --accent:#0b6f88;
+    box-sizing:border-box;
+    padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg:#14181d; --paper:#1b2027; --ink:#e8ebef; --muted:#9aa4af; --line:#2c333c;
+      --wall:#cfd5dc; --furn:#6cb4e6; --furn-fill:#1f2c38; --equip:#7aa2ff; --door:#4ade80;
+      --net:#ff6b6b; --dim:#e879f9; --label:#facc15; --accent:#22b8d9;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg:#14181d; --paper:#1b2027; --ink:#e8ebef; --muted:#9aa4af; --line:#2c333c;
+    --wall:#cfd5dc; --furn:#6cb4e6; --furn-fill:#1f2c38; --equip:#7aa2ff; --door:#4ade80;
+    --net:#ff6b6b; --dim:#e879f9; --label:#facc15; --accent:#22b8d9;
+  }
+  html { scroll-padding-top:env(safe-area-inset-top,0px); }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink);
+    font:15px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif; }
+  main { max-width:1100px; margin:0 auto; padding:20px 16px 32px; }
+  h1 { font-size:1.4rem; margin:0 0 4px; }
+  .sub { color:var(--muted); margin:0 0 16px; }
+  .chips { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:14px; }
+  .chip { background:var(--paper); border:1px solid var(--line); border-radius:999px; padding:4px 12px; font-size:.85rem; }
+  .chip b { color:var(--accent); }
+  .toolbar { display:flex; flex-wrap:wrap; gap:14px; align-items:center; margin-bottom:12px; font-size:.9rem; }
+  .toolbar label { display:flex; gap:6px; align-items:center; cursor:pointer; }
+  .toolbar button { margin-left:auto; background:var(--paper); color:var(--ink); border:1px solid var(--line);
+    border-radius:8px; padding:6px 12px; cursor:pointer; font:inherit; }
+  .sheet { background:var(--paper); border:1px solid var(--line); border-radius:12px; padding:8px; overflow-x:auto; }
+  svg { display:block; width:100%; height:auto; min-width:560px; }
+  svg text { font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif; text-anchor:middle; dominant-baseline:middle; }
+  .wall { fill:var(--wall); }
+  .wline { stroke:var(--wall); stroke-width:7; stroke-linecap:square; }
+  .furn { fill:var(--furn-fill); stroke:var(--furn); stroke-width:2; }
+  .equip { fill:none; stroke:var(--equip); stroke-width:2; }
+  .door { fill:none; stroke:var(--door); stroke-width:2; }
+  .net { fill:none; stroke:var(--net); stroke-width:3; stroke-linejoin:round; }
+  .dim { stroke:var(--dim); stroke-width:1.5; fill:none; }
+  .dimtxt { fill:var(--dim); font-size:22px; }
+  .lbl { fill:var(--label); font-size:20px; font-weight:600; }
+  .small { fill:var(--ink); font-size:14px; }
+  .title { fill:var(--ink); font-size:32px; font-weight:700; }
+  .pc:hover .furn { stroke-width:4; }
+  .legend { display:flex; flex-wrap:wrap; gap:16px; margin-top:12px; color:var(--muted); font-size:.85rem; }
+  .legend i { display:inline-block; width:22px; height:0; border-top:3px solid; vertical-align:middle; margin-right:6px; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Sala comercial 8 × 10 m</h1>
+  <p class="sub">Planta baixa com copa, banheiro e 8 estações de trabalho com VDI.</p>
+
+  <div class="chips">
+    <span class="chip">Área total <b>80 m²</b></span>
+    <span class="chip">Banheiro <b>1,5 × 1,5 m</b></span>
+    <span class="chip">Copa <b>4,6 × 2,5 m</b></span>
+    <span class="chip">Estações <b>8 com VDI</b></span>
+  </div>
+
+  <div class="toolbar">
+    <label><input type="checkbox" data-layer="g-mob" checked> Mobiliário</label>
+    <label><input type="checkbox" data-layer="g-net" checked> Rede VDI</label>
+    <label><input type="checkbox" data-layer="g-dim" checked> Cotas</label>
+    <button id="theme" type="button">Alternar tema</button>
+  </div>
+
+  <div class="sheet">
+    <svg id="plan" viewBox="-130 -170 1350 1100" role="img" aria-label="Planta baixa da sala comercial de 8 por 10 metros"></svg>
+  </div>
+
+  <div class="legend">
+    <span><i style="color:var(--wall)"></i>Paredes</span>
+    <span><i style="color:var(--door)"></i>Portas</span>
+    <span><i style="color:var(--furn)"></i>Mobiliário</span>
+    <span><i style="color:var(--net)"></i>Cabeamento CAT6 até os thin clients</span>
+  </div>
+</main>
+
+<script>
+(function () {
+  var NS = "http://www.w3.org/2000/svg";
+  var svg = document.getElementById("plan");
+  var X = function (v) { return v * 100; };
+  var Y = function (v) { return (8 - v) * 100; };
+
+  function g(id) { var e = document.createElementNS(NS, "g"); e.id = id; svg.appendChild(e); return e; }
+  function el(parent, tag, attrs, txt) {
+    var e = document.createElementNS(NS, tag);
+    for (var k in attrs) e.setAttribute(k, attrs[k]);
+    if (txt !== undefined) e.textContent = txt;
+    parent.appendChild(e); return e;
+  }
+  function R(p, x, y, w, h, cls) { return el(p, "rect", { x: X(x), y: Y(y + h), width: w * 100, height: h * 100, "class": cls }); }
+  function C(p, x, y, r, cls) { return el(p, "circle", { cx: X(x), cy: Y(y), r: r * 100, "class": cls }); }
+  function L(p, x1, y1, x2, y2, cls) { return el(p, "line", { x1: X(x1), y1: Y(y1), x2: X(x2), y2: Y(y2), "class": cls }); }
+  function T(p, s, x, y, cls) { return el(p, "text", { x: X(x), y: Y(y), "class": cls }, s); }
+
+  var walls = g("g-walls"), doors = g("g-doors"), mob = g("g-mob"), net = g("g-net"), dims = g("g-dim"), txt = g("g-txt");
+
+  /* Paredes externas */
+  el(walls, "path", { "class": "wall", "fill-rule": "evenodd",
+    d: "M-15 -15 H1015 V815 H-15 Z M0 0 V800 H1000 V0 Z" });
+  /* vão da porta de entrada (cobre a parede) */
+  el(walls, "rect", { x: 570, y: -16, width: 120, height: 17, fill: "var(--paper)" });
+
+  /* Banheiro 1,5 x 1,5 (canto nordeste) com vão de porta */
+  L(walls, 8.5, 6.5, 8.65, 6.5, "wline"); L(walls, 9.35, 6.5, 10, 6.5, "wline");
+  L(walls, 8.5, 6.5, 8.5, 8, "wline");
+  /* Divisória parcial da copa */
+  L(walls, 0, 5.5, 1.6, 5.5, "wline");
+
+  /* Portas */
+  L(doors, 5.7, 8, 5.7, 6.8, "door");
+  el(doors, "path", { "class": "door", d: "M690 0 A120 120 0 0 1 570 120" });
+  L(doors, 8.65, 6.5, 8.65, 7.2, "door");
+  el(doors, "path", { "class": "door", d: "M" + X(9.35) + " " + Y(6.5) + " A70 70 0 0 0 " + X(8.65) + " " + Y(7.2) });
+
+  /* Banheiro: vaso e lavatório */
+  R(mob, 9.25, 7.8, 0.4, 0.2, "equip");
+  el(mob, "ellipse", { cx: X(9.45), cy: Y(7.5), rx: 20, ry: 28, "class": "equip" });
+  R(mob, 8.55, 7.5, 0.4, 0.45, "equip"); C(mob, 8.75, 7.72, 0.1, "equip");
+
+  /* Copa */
+  R(mob, 0, 7.4, 4.6, 0.6, "furn");
+  R(mob, 0.9, 7.5, 0.6, 0.4, "equip"); T(txt, "PIA", 1.2, 7.7, "small");
+  R(mob, 2.0, 7.5, 0.45, 0.4, "equip"); T(txt, "MO", 2.225, 7.7, "small");
+  R(mob, 2.8, 7.5, 0.35, 0.4, "equip"); T(txt, "CAFÉ", 2.975, 7.7, "small");
+  R(mob, 3.5, 7.5, 0.35, 0.4, "equip"); T(txt, "ÁGUA", 3.675, 7.7, "small");
+  R(mob, 0, 6.8, 0.6, 0.6, "equip"); T(txt, "GEL", 0.3, 7.1, "small");
+  R(mob, 2.4, 6.05, 1.2, 0.7, "furn"); T(txt, "MESA", 3.0, 6.4, "small");
+  [[2.7, 5.85], [3.3, 5.85], [2.7, 6.95], [3.3, 6.95]].forEach(function (c) { C(mob, c[0], c[1], 0.17, "furn"); });
+  T(txt, "COPA / LANCHE (4,6 × 2,5 m)", 2.6, 5.2, "lbl");
+
+  /* Banheiro rótulo */
+  T(txt, "WC", 9.25, 7.0, "lbl"); T(txt, "1,50 × 1,50", 9.25, 6.75, "small");
+
+  /* 8 estações com VDI */
+  var xs = [0.9, 3.1, 5.3, 7.5], rows = [2.0, 4.2], n = 1, drops = [];
+  rows.forEach(function (yd, ri) {
+    xs.forEach(function (x) {
+      var id = "PC" + (n < 10 ? "0" : "") + n;
+      var pc = el(mob, "g", { "class": "pc" });
+      el(pc, "title", {}, id + " – estação com cliente VDI");
+      R(pc, x, yd, 1.4, 0.7, "furn");
+      R(pc, x + 0.45, yd + 0.38, 0.5, 0.05, "equip");
+      R(pc, x + 0.58, yd + 0.2, 0.24, 0.16, "equip");
+      R(pc, x + 1.05, yd + 0.15, 0.15, 0.25, "equip");
+      C(pc, x + 0.7, (ri === 0 ? 1.3 : 3.5), 0.25, "furn");
+      T(txt, id, x + 0.3, yd + 0.55, "small"); T(txt, "VDI", x + 0.3, yd + 0.3, "small");
+      drops.push([x + 1.12, ri === 0 ? yd + 0.7 : yd]);
+      n++;
+    });
+  });
+
+  /* Rack e cabeamento */
+  R(mob, 9.3, 3.2, 0.6, 0.7, "equip");
+  T(txt, "RACK", 9.6, 3.65, "small"); T(txt, "SW/PoE", 9.6, 3.4, "small");
+  el(net, "path", { "class": "net", d: "M" + X(9.3) + " " + Y(3.3) + " H" + X(9.1) + " V" + Y(3.1) + " H" + X(2.02) });
+  drops.forEach(function (d) { L(net, d[0], 3.1, d[0], d[1], "net"); });
+  T(net, "Cabeamento CAT6 → thin clients (VDI)", 5.4, 2.93, "lbl");
+
+  /* Entrada e título */
+  T(txt, "ENTRADA", 6.3, 8.3, "lbl");
+  T(txt, "SALA COMERCIAL 8,00 × 10,00 m — 80 m²", 5.0, 9.05, "title");
+  T(txt, "Escala 1:50 · 8 estações com cliente VDI", 5.0, 8.65, "small");
+
+  /* Cotas */
+  function tick(x, y) { L(dims, x - 0.07, y - 0.07, x + 0.07, y + 0.07, "dim"); }
+  L(dims, 0, -0.8, 10, -0.8, "dim"); tick(0, -0.8); tick(10, -0.8);
+  T(dims, "10,00 m", 5.0, -1.05, "dimtxt");
+  L(dims, -0.8, 0, -0.8, 8, "dim"); tick(-0.8, 0); tick(-0.8, 8);
+  el(dims, "text", { x: X(-1.05), y: Y(4), "class": "dimtxt", transform: "rotate(-90 " + X(-1.05) + " " + Y(4) + ")" }, "8,00 m");
+  L(dims, 8.5, 8.3, 10, 8.3, "dim"); tick(8.5, 8.3); tick(10, 8.3);
+  T(dims, "1,50", 9.25, 8.5, "dimtxt");
+  L(dims, 10.4, 6.5, 10.4, 8, "dim"); tick(10.4, 6.5); tick(10.4, 8);
+  T(dims, "1,50", 10.75, 7.25, "dimtxt");
+
+  /* Camadas liga/desliga */
+  document.querySelectorAll("input[data-layer]").forEach(function (cb) {
+    cb.addEventListener("change", function () {
+      document.getElementById(cb.dataset.layer).style.display = cb.checked ? "" : "none";
+    });
+  });
+
+  /* Alternar tema */
+  document.getElementById("theme").addEventListener("click", function () {
+    var root = document.documentElement;
+    var dark = root.dataset.theme ? root.dataset.theme === "dark"
+      : window.matchMedia("(prefers-color-scheme: dark)").matches;
+    root.dataset.theme = dark ? "light" : "dark";
+  });
+})();
+</script>
+</body>
+</html>

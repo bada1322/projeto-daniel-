@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Casa Smart Home – Automação</title>
+<style>
+  :root {
+    --bg:#f6f5f1; --paper:#fff; --ink:#1f2328; --muted:#5c6570; --line:#d9d6cc;
+    --wall:#2b2f36; --win:#38bdf8; --s:#2563eb; --a:#ea580c; --lit:#fde047; --furn:#8a94a0; --furn-fill:#eef0f3; --accent:#0b6f88;
+    box-sizing:border-box;
+    padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg:#14181d; --paper:#1b2027; --ink:#e8ebef; --muted:#9aa4af; --line:#2c333c;
+      --wall:#cfd5dc; --s:#60a5fa; --a:#fb923c; --lit:#facc15; --furn:#6b7683; --furn-fill:#232a33; --accent:#22b8d9;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg:#14181d; --paper:#1b2027; --ink:#e8ebef; --muted:#9aa4af; --line:#2c333c;
+    --wall:#cfd5dc; --s:#60a5fa; --a:#fb923c; --lit:#facc15; --furn:#6b7683; --furn-fill:#232a33; --accent:#22b8d9;
+  }
+  html { scroll-padding-top:env(safe-area-inset-top,0px); }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font:15px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif; }
+  main { max-width:1180px; margin:0 auto; padding:20px 16px 40px; }
+  h1 { font-size:1.45rem; margin:0 0 4px; } h2 { font-size:1.05rem; margin:26px 0 10px; }
+  .sub { color:var(--muted); margin:0 0 14px; }
+  .row { display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin-bottom:12px; }
+  .chip { background:var(--paper); border:1px solid var(--line); border-radius:999px; padding:4px 12px; font-size:.85rem; }
+  .chip b { color:var(--accent); }
+  button { font:inherit; background:var(--paper); color:var(--ink); border:1px solid var(--line); border-radius:999px; padding:6px 14px; cursor:pointer; }
+  button.go { background:var(--accent); color:#fff; border-color:var(--accent); }
+  .layout { display:grid; grid-template-columns:1fr 310px; gap:14px; align-items:start; }
+  @media (max-width:880px) { .layout { grid-template-columns:1fr; } }
+  .sheet { background:var(--paper); border:1px solid var(--line); border-radius:12px; padding:8px; overflow-x:auto; }
+  svg { display:block; width:100%; height:auto; min-width:560px; }
+  svg text { font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif; text-anchor:middle; dominant-baseline:middle; }
+  .wall { stroke:var(--wall); stroke-width:7; stroke-linecap:square; } .win { stroke:var(--win); stroke-width:7; }
+  .room { fill:var(--muted); font-size:17px; font-weight:700; letter-spacing:.06em; }
+  .fur { fill:var(--furn-fill); stroke:var(--furn); stroke-width:2; } .tvr { fill:var(--wall); stroke:none; }
+  .hub { fill:var(--paper); stroke:var(--accent); stroke-width:3; } .hubt { fill:var(--accent); font-size:14px; font-weight:700; }
+  .dev { cursor:pointer; } .dev circle { fill:var(--paper); stroke-width:3; transition:fill .25s; }
+  .dev.s circle { stroke:var(--s); } .dev.a circle { stroke:var(--a); } .dev text { font-size:22px; }
+  .dev.a.lit circle { fill:var(--lit); filter:drop-shadow(0 0 8px var(--lit)); }
+  .dev.sel circle { stroke-width:6; } .dev.hit circle { stroke-width:6; }
+  .dev.s.hit circle { filter:drop-shadow(0 0 7px var(--s)); }
+  @media (prefers-reduced-motion:no-preference) { .dev.hit circle { animation:pulse 1.1s ease-in-out 3; } }
+  @keyframes pulse { 50% { stroke-opacity:.35; } }
+  .panel { background:var(--paper); border:1px solid var(--line); border-radius:12px; padding:14px; min-height:230px; }
+  .panel h3 { margin:0 0 6px; font-size:1rem; } .panel p { margin:0 0 8px; }
+  .badge { display:inline-block; font-size:.75rem; font-weight:700; padding:2px 8px; border-radius:999px; color:#fff; margin-bottom:8px; }
+  .badge.s { background:var(--s); } .badge.a { background:var(--a); }
+  dl { margin:0; } dt { color:var(--muted); font-size:.78rem; margin-top:8px; } dd { margin:0; }
+  .states { display:flex; flex-wrap:wrap; gap:6px; }
+  .st { background:var(--paper); border:1px solid var(--line); border-radius:8px; padding:4px 10px; font-size:.82rem; color:var(--muted); }
+  .st.on { background:color-mix(in srgb, var(--lit) 35%, var(--paper)); color:var(--ink); border-color:var(--lit); font-weight:600; }
+  .legend { display:flex; gap:16px; flex-wrap:wrap; color:var(--muted); font-size:.85rem; margin-top:10px; }
+  .legend i { display:inline-block; width:14px; height:14px; border-radius:50%; border:3px solid; vertical-align:middle; margin-right:6px; }
+  .tw { overflow-x:auto; }
+  table { width:100%; border-collapse:collapse; background:var(--paper); border:1px solid var(--line); font-size:.88rem; }
+  th, td { text-align:left; padding:8px 10px; border-bottom:1px solid var(--line); vertical-align:top; }
+  th { color:var(--muted); font-weight:600; font-size:.78rem; }
+  tbody tr.clk { cursor:pointer; } tbody tr.clk:hover { background:color-mix(in srgb, var(--accent) 10%, var(--paper)); }
+  .arch { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; } @media (max-width:760px) { .arch { grid-template-columns:1fr 1fr; } }
+  .box { background:var(--paper); border:1px solid var(--line); border-radius:12px; padding:12px; } .box b { display:block; margin-bottom:4px; }
+  .box span { color:var(--muted); font-size:.85rem; } .box.h { border-color:var(--accent); }
+</style>
+</head>
+<body>
+<main>
+  <h1>Casa Smart Home – automação por presença</h1>
+  <p class="sub">Casa de 12 × 9 m com sala, cozinha, suíte, quarto e banheiro social. Use os botões para simular o dia: cada cenário muda o estado dos atuadores.</p>
+
+  <div class="row" id="chips"></div>
+  <div class="row" id="scenes" role="group" aria-label="Cenários"></div>
+
+  <div class="layout">
+    <div class="sheet"><svg id="plan" viewBox="-60 -50 1320 1000" role="img" aria-label="Planta da casa com sensores e atuadores"></svg></div>
+    <aside class="panel" id="info" aria-live="polite"></aside>
+  </div>
+  <div class="legend">
+    <span><i style="color:var(--s)"></i>Sensor</span><span><i style="color:var(--a)"></i>Atuador</span>
+    <span><i style="color:var(--lit);background:var(--lit)"></i>Atuador ligado</span>
+    <button id="theme" type="button" style="margin-left:auto">Alternar tema</button>
+  </div>
+
+  <h2>Estado dos atuadores</h2>
+  <div class="states" id="states"></div>
+
+  <h2>Regras de automação</h2>
+  <div class="tw"><table><thead><tr><th>Gatilho (sensor)</th><th>Condição</th><th>Ação (atuador)</th></tr></thead><tbody>
+    <tr><td>Presença na sala</td><td>Sala vazia e luz apagada</td><td>Liga a luz da sala</td></tr>
+    <tr><td>Presença na cozinha</td><td>Cozinha vazia e luz apagada</td><td>Liga a luz da cozinha</td></tr>
+    <tr><td>Presença no quarto ou na suíte</td><td>Cômodo com luz apagada</td><td>Liga a luz do cômodo</td></tr>
+    <tr><td>Sofá ocupado</td><td>Pessoa sentada por mais de 10 s</td><td>Liga a TV</td></tr>
+    <tr><td>Cama ocupada</td><td>Pessoa deitada por mais de 30 s</td><td>Apaga a luz do quarto ou da suíte</td></tr>
+    <tr><td>Porta de entrada abre</td><td>Casa vazia, ou celular chegando</td><td>Destranca a fechadura</td></tr>
+    <tr><td>Saída de casa</td><td>Porta abriu e nenhum sensor detecta presença por 2 min, ou o celular saiu da rede</td><td>Apaga todas as luzes, desliga TV e ares, tranca a porta</td></tr>
+  </tbody></table></div>
+
+  <h2>Lista de dispositivos</h2>
+  <div class="tw"><table><thead><tr><th>Tipo</th><th>Dispositivo</th><th>Hardware sugerido</th><th>Comunicação</th></tr></thead><tbody id="rows"></tbody></table></div>
+
+  <h2>Arquitetura</h2>
+  <div class="arch">
+    <div class="box"><b>1. Sensores</b><span>ESP32 e Zigbee: presença, ocupação do sofá e das camas, porta e gás.</span></div>
+    <div class="box h"><b>2. Hub</b><span>Raspberry Pi com Home Assistant e MQTT. As regras rodam localmente, sem depender da internet.</span></div>
+    <div class="box"><b>3. Atuadores</b><span>Relés e dimmers de luz, controle IR da TV e dos ares, fechadura eletrônica.</span></div>
+    <div class="box"><b>4. Interface</b><span>App no celular, painel e voz. O celular também informa se você saiu de casa.</span></div>
+  </div>
+</main>
+
+<script>
+(function () {
+  var NS = "http://www.w3.org/2000/svg", svg = document.getElementById("plan");
+  var X = function (v) { return v * 100; }, Y = function (v) { return (9 - v) * 100; };
+  function el(p, t, a, x) { var e = document.createElementNS(NS, t); for (var k in a) e.setAttribute(k, a[k]); if (x !== undefined) e.textContent = x; p.appendChild(e); return e; }
+  function mk(t, x, c) { var e = document.createElement(t); if (x) e.textContent = x; if (c) e.className = c; return e; }
+  function clear(n) { while (n.firstChild) n.removeChild(n.firstChild); }
+  function seg(a, c) { el(svg, "line", { x1: X(a[0]), y1: Y(a[1]), x2: X(a[2]), y2: Y(a[3]), "class": c || "wall" }); }
+  function R(x, y, w, h, c) { return el(svg, "rect", { x: X(x), y: Y(y + h), width: w * 100, height: h * 100, rx: 3, "class": c || "fur" }); }
+  function T(s, x, y, c) { el(svg, "text", { x: X(x), y: Y(y), "class": c || "room" }, s); }
+
+  /* paredes */
+  [[0,0,.8,0],[1.8,0,12,0],[0,9,12,9],[0,0,0,9],[12,0,12,9],
+   [6,0,6,3.8],[6,4.8,6,9],[6,3.6,7,3.6],[7.9,3.6,12,3.6],[6,5,7,5],[7.9,5,10.4,5],[11.2,5,12,5],[10,5,10,9],
+   [0,5,1.5,5],[4.5,5,6,5],[10.2,0,10.2,.6],[10.2,1.4,10.2,2],[10.2,2,12,2]].forEach(function (a) { seg(a); });
+  [[3,0,5,0],[6.3,0,7.6,0],[0,2,0,4],[1,9,4,9],[0,6,0,8],[7.5,9,9.5,9],[10.5,9,11.5,9]].forEach(function (a) { seg(a, "win"); });
+
+  /* móveis */
+  R(2.5, 1.3, .9, 2.4); R(2.5, 1.3, .22, 2.4);              /* sofá */
+  R(5.78, 1.5, .14, 1.5, "tvr");                             /* TV */
+  R(0, 8.4, 6, .6); R(3.6, 5.7, 1.5, .9);                    /* bancada e mesa */
+  R(8, .4, 1.6, 2); R(8.1, 2.0, .6, .3); R(8.9, 2.0, .6, .3); /* cama suíte */
+  R(7, 7, 1.6, 2); R(7.1, 8.4, .6, .3); R(7.9, 8.4, .6, .3);  /* cama quarto */
+  R(10.9, 1.5, .4, .4); R(11.4, .2, .5, .5);                  /* WC suíte (pia e box) */
+  R(11.3, 8.5, .5, .35); R(10.2, 5.2, .5, .4); R(10.2, 8.2, .6, .6); /* social: vaso, pia, box */
+
+  /* rótulos */
+  T("SALA", 4.3, 3.4); T("COZINHA", 4.5, 7.3); T("SUÍTE", 7.6, 3.0); T("CORREDOR", 7.35, 4.3);
+  T("QUARTO", 9.0, 6.6); T("BANHEIRO", 11, 6.1); T("SOCIAL", 11, 5.8); T("WC SUÍTE", 11.1, 1.8);
+  T("ENTRADA", 1.3, -.35, "room");
+  el(svg, "rect", { x: X(11.2), y: Y(4.8), width: 70, height: 36, rx: 6, "class": "hub" });
+  el(svg, "text", { x: X(11.2) + 35, y: Y(4.8) + 18, "class": "hubt" }, "HUB");
+
+  /* dispositivos */
+  var D = [], by = {}, nd = {}, st = {};
+  function add(k, t, i, x, y, n, hw, p, r) { D.push({ k: k, t: t, i: i, x: x, y: y, n: n, hw: hw, p: p, r: r }); }
+  add("pir_sala","s","🚶",4.5,4.3,"Presença – sala","HC-SR501 / mmWave + ESP32","Wi-Fi / MQTT","Detecta quem entra na sala e dispara a luz.");
+  add("sofa","s","🛋️",2.95,2.5,"Ocupação do sofá","Tapete de pressão ou mmWave LD2410","Wi-Fi / MQTT","Detecta alguém sentado e liga a TV.");
+  add("porta","s","🧲",1.0,.5,"Porta de entrada magnética","Sensor reed Zigbee","Zigbee","Informa abertura e fechamento da porta; base do cenário de saída.");
+  add("pir_coz","s","🚶",1.0,5.9,"Presença – cozinha","HC-SR501 + ESP32","Wi-Fi / MQTT","Liga a luz da cozinha ao entrar.");
+  add("gas","s","🔥",2.5,7.9,"Gás e fumaça – cozinha","MQ-2 + ESP32","Wi-Fi / MQTT","Alerta de segurança (envia notificação ao celular).");
+  add("pir_cor","s","🚶",8.6,4.3,"Presença – corredor","HC-SR501 + ESP32","Wi-Fi / MQTT","Acende a luz do corredor.");
+  add("pir_suite","s","🚶",6.5,3.1,"Presença – suíte","HC-SR501 + ESP32","Wi-Fi / MQTT","Liga a luz da suíte ao entrar.");
+  add("cama_s","s","🛏️",8.8,1.4,"Ocupação da cama – suíte","Tapete de pressão sob o colchão","Zigbee / Wi-Fi","Detecta alguém deitado e apaga a luz da suíte.");
+  add("pir_bsu","s","🚶",10.7,1.5,"Presença – banheiro da suíte","HC-SR501 + ESP32","Wi-Fi / MQTT","Liga a luz do banheiro da suíte.");
+  add("pir_q","s","🚶",9.5,5.6,"Presença – quarto","HC-SR501 + ESP32","Wi-Fi / MQTT","Liga a luz do quarto ao entrar.");
+  add("cama_q","s","🛏️",7.8,8.0,"Ocupação da cama – quarto","Tapete de pressão sob o colchão","Zigbee / Wi-Fi","Detecta alguém deitado e apaga a luz do quarto.");
+  add("pir_bs","s","🚶",10.5,8.5,"Presença – banheiro social","HC-SR501 + ESP32","Wi-Fi / MQTT","Liga a luz do banheiro social.");
+  add("luz_sala","a","💡",3.0,4.3,"Luz – sala","Dimmer Zigbee ou relé Shelly","Zigbee / Wi-Fi","Liga por presença e apaga ao sair.");
+  add("tv","a","📺",5.45,2.25,"TV da sala","Controle IR (ESP32 + LED IR) ou API da Smart TV","Wi-Fi / IR","Liga quando alguém senta no sofá e desliga ao sair.");
+  add("ac_sala","a","❄️",.5,2.2,"Ar-condicionado – sala","Controle IR (ESP32 + LED IR)","Wi-Fi / IR","Desliga ao sair de casa.");
+  add("fechadura","a","🔒",1.65,.5,"Fechadura eletrônica","Fechadura smart Zigbee ou ESP32 + servo","Zigbee / Wi-Fi","Destranca ao chegar e tranca ao sair.");
+  add("luz_coz","a","💡",3.0,7.0,"Luz – cozinha","Relé Shelly / Sonoff","Wi-Fi","Liga por presença na cozinha.");
+  add("luz_cor","a","💡",10.6,4.3,"Luz – corredor","Relé Shelly / Sonoff","Wi-Fi","Luz de circulação por presença.");
+  add("luz_suite","a","💡",8.8,2.9,"Luz – suíte","Dimmer Zigbee","Zigbee","Liga por presença e apaga ao deitar.");
+  add("ac_suite","a","❄️",6.45,1.0,"Ar-condicionado – suíte","Controle IR (ESP32 + LED IR)","Wi-Fi / IR","Desliga ao sair de casa.");
+  add("luz_bsu","a","💡",11.4,1.0,"Luz – banheiro da suíte","Relé Shelly / Sonoff","Wi-Fi","Acionada pela presença no banheiro.");
+  add("luz_q","a","💡",8.0,6.0,"Luz – quarto","Dimmer Zigbee","Zigbee","Liga por presença e apaga ao deitar.");
+  add("luz_bs","a","💡",11.0,7.0,"Luz – banheiro social","Relé Shelly / Sonoff","Wi-Fi","Acionada pela presença no banheiro.");
+
+  D.forEach(function (d) {
+    by[d.k] = d; if (d.t === "a") st[d.k] = false;
+    var g = el(svg, "g", { "class": "dev " + d.t, tabindex: 0, role: "button", "aria-label": d.n, transform: "translate(" + X(d.x) + " " + Y(d.y) + ")" });
+    el(g, "title", {}, d.n); el(g, "circle", { r: 22 }); d.txt = el(g, "text", { x: 0, y: 1 }, d.i);
+    g.addEventListener("click", function () { pick(d.k); });
+    g.addEventListener("keydown", function (e) { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); pick(d.k); } });
+    nd[d.k] = g;
+  });
+  st.fechadura = true; /* casa vazia: porta trancada */
+
+  var info = document.getElementById("info"), sel = null;
+  var ns = D.filter(function (d) { return d.t === "s"; }).length;
+  document.getElementById("chips").innerHTML = '<span class="chip">Área <b>108 m²</b></span><span class="chip">Cômodos <b>5 + 2 banheiros</b></span><span class="chip">Sensores <b>' + ns + '</b></span><span class="chip">Atuadores <b>' + (D.length - ns) + '</b></span>';
+
+  /* estado */
+  var stBox = document.getElementById("states");
+  function label(d, on) { return d.k === "fechadura" ? (on ? "trancada" : "destrancada") : (on ? "ligado" : "desligado"); }
+  function paint() {
+    clear(stBox);
+    D.filter(function (d) { return d.t === "a"; }).forEach(function (d) {
+      var on = st[d.k]; nd[d.k].classList.toggle("lit", on && d.k !== "fechadura");
+      if (d.k === "fechadura") d.txt.textContent = on ? "🔒" : "🔓";
+      stBox.appendChild(mk("span", d.n + ": " + label(d, on), "st" + (on && d.k !== "fechadura" ? " on" : "")));
+    });
+  }
+  function homeText() {
+    clear(info); info.appendChild(mk("h3", "Como usar"));
+    info.appendChild(mk("p", "Clique nos cenários na ordem (Cheguei em casa, cozinha, sofá, quartos, cama e Saí de casa) para ver as luzes, a TV e a fechadura mudarem de estado. Clique em um ícone para ver os detalhes do dispositivo."));
+  }
+  function pick(k) {
+    clearHit(); if (sel) nd[sel].classList.remove("sel"); sel = k; nd[k].classList.add("sel");
+    var d = by[k]; clear(info);
+    info.appendChild(mk("span", d.t === "s" ? "SENSOR" : "ATUADOR", "badge " + d.t)); info.appendChild(mk("h3", d.i + " " + d.n));
+    var dl = mk("dl");
+    [["Hardware sugerido", d.hw], ["Comunicação", d.p], ["Função", d.r]].forEach(function (r) { dl.appendChild(mk("dt", r[0])); dl.appendChild(mk("dd", r[1])); });
+    if (d.t === "a") { dl.appendChild(mk("dt", "Estado agora")); dl.appendChild(mk("dd", label(d, st[k]))); }
+    info.appendChild(dl);
+  }
+  function clearHit() { D.forEach(function (d) { nd[d.k].classList.remove("hit"); }); }
+
+  /* cenários */
+  var ALL = D.filter(function (d) { return d.t === "a"; }).map(function (d) { return d.k; });
+  var off = {}; ALL.forEach(function (k) { off[k] = false; }); off.fechadura = true;
+  var S = [
+    { n: "Cheguei em casa", s: ["porta", "pir_sala"], set: { fechadura: false, luz_sala: true },
+      t: "A porta abre e a fechadura destranca. O sensor de presença da sala detecta você e acende a luz da sala." },
+    { n: "Entrei na cozinha", s: ["pir_coz"], set: { luz_coz: true }, t: "O sensor de presença da cozinha acende a luz da cozinha." },
+    { n: "Sentei no sofá", s: ["sofa"], set: { tv: true }, t: "O sensor de ocupação detecta alguém sentado no sofá e liga a TV." },
+    { n: "Entrei nos quartos", s: ["pir_suite", "pir_q"], set: { luz_suite: true, luz_q: true }, t: "A presença na suíte e no quarto acende a luz de cada cômodo." },
+    { n: "Deitei na cama", s: ["cama_s", "cama_q"], set: { luz_suite: false, luz_q: false }, t: "O sensor sob o colchão detecta que você deitou e apaga a luz da suíte e a do quarto." },
+    { n: "Saí de casa", s: ["porta", "pir_sala", "pir_coz", "pir_cor", "pir_suite", "pir_q"], set: off,
+      t: "A porta abre e nenhum sensor detecta presença por 2 minutos (ou o celular sai da rede). O hub apaga todas as luzes, desliga TV e ares e tranca a porta." }
+  ];
+  var sc = document.getElementById("scenes");
+  S.forEach(function (x, i) { var b = mk("button", (i + 1) + ". " + x.n); b.type = "button"; b.addEventListener("click", function () { run(i); }); sc.appendChild(b); });
+  var rs = mk("button", "Reiniciar"); rs.type = "button"; rs.addEventListener("click", function () { ALL.forEach(function (k) { st[k] = false; }); st.fechadura = true; clearHit(); paint(); homeText(); }); sc.appendChild(rs);
+
+  function run(i) {
+    var x = S[i], changed = [];
+    clearHit(); if (sel) nd[sel].classList.remove("sel"); sel = null;
+    for (var k in x.set) { if (st[k] !== x.set[k]) changed.push(k); st[k] = x.set[k]; }
+    x.s.concat(changed).forEach(function (k) { nd[k].classList.add("hit"); });
+    paint(); clear(info); info.appendChild(mk("h3", x.n)); info.appendChild(mk("p", x.t));
+    var dl = mk("dl"); dl.appendChild(mk("dt", "Sensores acionados")); dl.appendChild(mk("dd", x.s.map(function (k) { return by[k].n; }).join("; ")));
+    dl.appendChild(mk("dt", "Atuadores que mudaram")); dl.appendChild(mk("dd", changed.length ? changed.map(function (k) { return by[k].n + " → " + label(by[k], st[k]); }).join("; ") : "Nenhum (já estavam nesse estado)"));
+    info.appendChild(dl);
+  }
+
+  /* tabela */
+  var tb = document.getElementById("rows");
+  D.forEach(function (d) {
+    var tr = mk("tr", "", "clk");
+    [d.t === "s" ? "Sensor" : "Atuador", d.i + " " + d.n, d.hw, d.p].forEach(function (v) { tr.appendChild(mk("td", v)); });
+    tr.addEventListener("click", function () { pick(d.k); window.scrollTo({ top: svg.getBoundingClientRect().top + window.scrollY - 70, behavior: "smooth" }); });
+    tb.appendChild(tr);
+  });
+
+  document.getElementById("theme").addEventListener("click", function () {
+    var r = document.documentElement, dark = r.dataset.theme ? r.dataset.theme === "dark" : window.matchMedia("(prefers-color-scheme: dark)").matches;
+    r.dataset.theme = dark ? "light" : "dark";
+  });
+  paint(); homeText();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Condomínio Smart – Projeto</title>
+<style>
+  :root {
+    --bg:#f6f5f1; --paper:#fff; --ink:#1f2328; --muted:#5c6570; --line:#d9d6cc;
+    --wall:#2b2f36; --s:#2563eb; --a:#ea580c; --lit:#fde047; --road:#d7d9dd; --green:#dff0e0; --smart:#0b8a6a;
+    --furn:#8a94a0; --furn-fill:#eef0f3; --accent:#0b6f88;
+    box-sizing:border-box;
+    padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg:#14181d; --paper:#1b2027; --ink:#e8ebef; --muted:#9aa4af; --line:#2c333c;
+      --wall:#cfd5dc; --s:#60a5fa; --a:#fb923c; --lit:#facc15; --road:#2b3139; --green:#1d2b22; --smart:#34d3a8;
+      --furn:#6b7683; --furn-fill:#232a33; --accent:#22b8d9;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg:#14181d; --paper:#1b2027; --ink:#e8ebef; --muted:#9aa4af; --line:#2c333c;
+    --wall:#cfd5dc; --s:#60a5fa; --a:#fb923c; --lit:#facc15; --road:#2b3139; --green:#1d2b22; --smart:#34d3a8;
+    --furn:#6b7683; --furn-fill:#232a33; --accent:#22b8d9;
+  }
+  html { scroll-padding-top:env(safe-area-inset-top,0px); }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font:15px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif; }
+  main { max-width:1180px; margin:0 auto; padding:20px 16px 40px; }
+  h1 { font-size:1.45rem; margin:0 0 4px; } h2 { font-size:1.05rem; margin:26px 0 10px; }
+  .sub { color:var(--muted); margin:0 0 14px; }
+  .row { display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin-bottom:12px; }
+  .chip { background:var(--paper); border:1px solid var(--line); border-radius:999px; padding:4px 12px; font-size:.85rem; } .chip b { color:var(--accent); }
+  button { font:inherit; background:var(--paper); color:var(--ink); border:1px solid var(--line); border-radius:999px; padding:6px 14px; cursor:pointer; }
+  .layout { display:grid; grid-template-columns:1fr 310px; gap:14px; align-items:start; }
+  @media (max-width:880px) { .layout { grid-template-columns:1fr; } }
+  .sheet { background:var(--paper); border:1px solid var(--line); border-radius:12px; padding:8px; overflow-x:auto; }
+  svg { display:block; width:100%; height:auto; min-width:600px; }
+  svg text { font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif; text-anchor:middle; dominant-baseline:middle; }
+  .wall { stroke:var(--wall); stroke-width:6; stroke-linecap:square; } .road { fill:var(--road); }
+  .lot { fill:none; stroke:var(--line); stroke-width:2; stroke-dasharray:8 6; } .lazer { fill:var(--green); stroke:var(--smart); stroke-width:2; }
+  .house { cursor:pointer; } .house rect.b { fill:var(--furn-fill); stroke-width:3; transition:fill .25s; }
+  .house.smart rect.b { stroke:var(--smart); } .house.normal rect.b { stroke:var(--furn); }
+  .house.lit rect.b { fill:var(--lit); } .house.sel rect.b, .place.sel rect.b { stroke-width:6; }
+  .int { stroke:var(--furn); stroke-width:1.5; } .hn { fill:var(--ink); font-size:15px; font-weight:700; } .ht { font-size:11px; font-weight:700; }
+  .smart .ht { fill:var(--smart); } .normal .ht { fill:var(--muted); }
+  .hp { fill:var(--ink); font-size:12px; font-weight:700; } dd { white-space:pre-line; }
+  .place { cursor:pointer; } .place rect.b { fill:var(--furn-fill); stroke:var(--accent); stroke-width:3; }
+  .room { fill:var(--muted); font-size:14px; font-weight:700; letter-spacing:.05em; }
+  .dev { cursor:pointer; } .dev circle { fill:var(--paper); stroke-width:3; transition:fill .25s; }
+  .dev.s circle { stroke:var(--s); } .dev.a circle { stroke:var(--a); } .dev text { font-size:17px; }
+  .dev.a.lit circle { fill:var(--lit); filter:drop-shadow(0 0 7px var(--lit)); }
+  .dev.sel circle { stroke-width:6; } .dev.hit circle { stroke-width:6; }
+  .dev.s.hit circle { filter:drop-shadow(0 0 7px var(--s)); }
+  @media (prefers-reduced-motion:no-preference) { .dev.hit circle { animation:pulse 1.1s ease-in-out 3; } }
+  @keyframes pulse { 50% { stroke-opacity:.35; } }
+  .panel { background:var(--paper); border:1px solid var(--line); border-radius:12px; padding:14px; min-height:260px; }
+  .panel h3 { margin:0 0 6px; font-size:1rem; } .panel p { margin:0 0 8px; }
+  .badge { display:inline-block; font-size:.75rem; font-weight:700; padding:2px 8px; border-radius:999px; color:#fff; margin-bottom:8px; background:var(--accent); }
+  .badge.s { background:var(--s); } .badge.a { background:var(--a); } .badge.m { background:var(--smart); }
+  dl { margin:0; } dt { color:var(--muted); font-size:.78rem; margin-top:8px; } dd { margin:0; }
+  .panel a { color:var(--accent); }
+  .states { display:flex; flex-wrap:wrap; gap:6px; }
+  .st { background:var(--paper); border:1px solid var(--line); border-radius:8px; padding:4px 10px; font-size:.82rem; color:var(--muted); }
+  .st.on { background:color-mix(in srgb, var(--lit) 35%, var(--paper)); color:var(--ink); border-color:var(--lit); font-weight:600; }
+  .legend { display:flex; gap:16px; flex-wrap:wrap; color:var(--muted); font-size:.85rem; margin-top:10px; align-items:center; }
+  .legend i { display:inline-block; width:14px; height:14px; border-radius:50%; border:3px solid; vertical-align:middle; margin-right:6px; }
+  .tw { overflow-x:auto; }
+  table { width:100%; border-collapse:collapse; background:var(--paper); border:1px solid var(--line); font-size:.88rem; }
+  th, td { text-align:left; padding:8px 10px; border-bottom:1px solid var(--line); vertical-align:top; }
+  th { color:var(--muted); font-weight:600; font-size:.78rem; }
+  tbody tr.clk { cursor:pointer; } tbody tr.clk:hover { background:color-mix(in srgb, var(--accent) 10%, var(--paper)); }
+  ul.notes { margin:0; padding-left:18px; color:var(--muted); font-size:.9rem; }
+  .budget { display:grid; grid-template-columns:repeat(auto-fit,minmax(210px,1fr)); gap:10px; margin-bottom:14px; }
+  .budget label { display:flex; flex-direction:column; gap:4px; font-size:.82rem; color:var(--muted); }
+  .budget input { font:inherit; padding:6px 8px; border:1px solid var(--line); border-radius:8px; background:var(--paper); color:var(--ink); }
+  .cards { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:10px; margin-bottom:14px; }
+  .card { background:var(--paper); border:1px solid var(--line); border-radius:12px; padding:12px; }
+  .card small { color:var(--muted); display:block; } .card b { font-size:1.3rem; display:block; margin:2px 0; }
+  .card.hi { border-color:var(--smart); }
+</style>
+</head>
+<body>
+<main>
+  <h1>Condomínio Smart – planta e automação</h1>
+  <p class="sub">10 casas (8 smart home e 2 normais), duas guaritas com reconhecimento facial e um mercadinho inteligente. Use os cenários para simular o dia.</p>
+
+  <div class="row" id="chips"></div>
+  <div class="row" id="scenes" role="group" aria-label="Cenários"></div>
+
+  <div class="layout">
+    <div class="sheet"><svg id="plan" viewBox="-30 -30 1060 960" role="img" aria-label="Planta do condomínio com casas, guaritas e mercadinho"></svg></div>
+    <aside class="panel" id="info" aria-live="polite"></aside>
+  </div>
+  <div class="legend">
+    <span><i style="color:var(--smart)"></i>Casa smart</span><span><i style="color:var(--furn)"></i>Casa normal</span>
+    <span><i style="color:var(--s)"></i>Sensor</span><span><i style="color:var(--a)"></i>Atuador</span>
+    <span><i style="color:var(--lit);background:var(--lit)"></i>Ligado ou aberto</span>
+    <button id="theme" type="button" style="margin-left:auto">Alternar tema</button>
+  </div>
+
+  <h2>Estado atual</h2>
+  <div class="states" id="states"></div>
+
+  <h2>Regras de automação</h2>
+  <div class="tw"><table><thead><tr><th>Gatilho</th><th>Condição</th><th>Ação</th></tr></thead><tbody>
+    <tr><td>Rosto reconhecido na Portaria 1 ou 2</td><td>Morador cadastrado</td><td>Abre a cancela, registra a entrada e avisa a casa (nas smart: destranca a porta e acende a luz da sala)</td></tr>
+    <tr><td>Rosto desconhecido</td><td>Visitante ou entregador</td><td>Cancela fica fechada; alerta na guarita; o porteiro confirma com o morador e libera</td></tr>
+    <tr><td>Cliente chega ao mercadinho</td><td>Sensor de presença na porta detecta movimento</td><td>Liga a luz e o ar-condicionado</td></tr>
+    <tr><td>Mercadinho sem cliente</td><td>5 minutos sem presença</td><td>Desliga a luz e o ar-condicionado</td></tr>
+    <tr><td>Morador reconhecido na saída</td><td>Casa smart</td><td>Abre a cancela de saída; a casa apaga tudo, desliga TV e ares e tranca a porta</td></tr>
+    <tr><td>Dentro de cada casa smart</td><td>Regras do projeto da casa</td><td>Luz por presença, TV ao sentar no sofá e luz apagada ao deitar</td></tr>
+  </tbody></table></div>
+
+  <h2>Dispositivos do condomínio</h2>
+  <div class="tw"><table><thead><tr><th>Tipo</th><th>Dispositivo</th><th>Hardware sugerido</th><th>Comunicação</th></tr></thead><tbody id="rows"></tbody></table></div>
+
+  <h2>Preço estimado por casa</h2>
+  <p class="sub">Preços definidos para este projeto: casa smart home por R$ 350 mil e casa comum por R$ 300 mil. Você pode alterar os valores abaixo e a planta atualiza na hora.</p>
+  <div class="budget">
+    <label>Casa smart home (R$)<input id="b_smart" type="number" value="350000" step="1000" min="0"></label>
+    <label>Casa comum (R$)<input id="b_norm" type="number" value="300000" step="1000" min="0"></label>
+  </div>
+  <div class="cards" id="cards"></div>
+  <div class="tw"><table><thead><tr><th>Kit de automação por casa smart</th><th>Valor estimado</th></tr></thead><tbody id="kit"></tbody></table></div>
+  <p class="sub" style="margin-top:8px">O kit de automação é uma estimativa de referência para o custo da parte smart de cada casa.</p>
+
+  <h2>Privacidade e segurança</h2>
+  <ul class="notes">
+    <li>Reconhecimento facial usa dado biométrico: exige consentimento de cada morador (LGPD), finalidade clara e política de retenção.</li>
+    <li>Processar os rostos localmente na portaria e guardar só os modelos criptografados, sem enviar imagens para a nuvem.</li>
+    <li>Ter um segundo meio de acesso (cartão ou app) e liberação manual na guarita caso o reconhecimento falhe.</li>
+    <li>Rede IoT separada em VLAN, nobreak nas guaritas e nas cancelas, e regras críticas rodando em servidor local.</li>
+    <li>Os modelos de hardware são sugestões e podem ser trocados por equivalentes.</li>
+  </ul>
+</main>
+
+<script>
+(function () {
+  var NS = "http://www.w3.org/2000/svg", svg = document.getElementById("plan");
+  var X = function (v) { return v * 10; }, Y = function (v) { return (90 - v) * 10; };
+  function el(p, t, a, x) { var e = document.createElementNS(NS, t); for (var k in a) e.setAttribute(k, a[k]); if (x !== undefined) e.textContent = x; p.appendChild(e); return e; }
+  function mk(t, x, c) { var e = document.createElement(t); if (x) e.textContent = x; if (c) e.className = c; return e; }
+  function clear(n) { while (n.firstChild) n.removeChild(n.firstChild); }
+  function seg(a) { el(svg, "line", { x1: X(a[0]), y1: Y(a[1]), x2: X(a[2]), y2: Y(a[3]), "class": "wall" }); }
+  function R(p, x, y, w, h, c) { return el(p, "rect", { x: X(x), y: Y(y + h), width: w * 10, height: h * 10, rx: 4, "class": c }); }
+  function T(p, s, x, y, c) { return el(p, "text", { x: X(x), y: Y(y), "class": c || "room" }, s); }
+
+  /* terreno */
+  R(svg, 44, 0, 12, 90, "road"); R(svg, 12, 4, 28, 12, "lazer"); T(svg, "ÁREA DE LAZER", 26, 10);
+  [[0,0,44,0],[56,0,100,0],[0,90,44,90],[56,90,100,90],[0,0,0,90],[100,0,100,90]].forEach(seg);
+  T(svg, "RUA INTERNA", 50, 45, "room").setAttribute("transform", "rotate(-90 " + X(50) + " " + Y(45) + ")");
+  var rows = [20, 32, 44, 56, 68];
+  rows.forEach(function (y) { R(svg, 8, y, 36, 12, "lot"); R(svg, 56, y, 36, 12, "lot"); });
+
+  /* lugares clicáveis */
+  var places = {}, pn = {}, sel = null, houseLit = {}, hp = {};
+  var HSMART = "Casa smart no mesmo modelo do projeto: sala, cozinha, suíte com banheiro, quarto e banheiro social, com 12 sensores e 11 atuadores. Regras: luz por presença na sala, cozinha e quartos; TV liga ao sentar no sofá; luz apaga ao deitar; ao sair, apaga tudo e tranca a porta.";
+  var HNORM = "Casa convencional, sem automação: interruptores e controles manuais. O acesso ao condomínio continua por reconhecimento facial, como nas demais, e a casa pode ser modernizada no futuro.";
+  function house(n, x, y) {
+    var smart = n !== 4 && n !== 9, g = el(svg, "g", { "class": "house " + (smart ? "smart" : "normal"), tabindex: 0, role: "button", "aria-label": "Casa " + n });
+    R(g, x, y, 14, 9, "b");
+    if (smart) { el(g, "line", { x1: X(x + 6.5), y1: Y(y), x2: X(x + 6.5), y2: Y(y + 9), "class": "int" }); el(g, "line", { x1: X(x + 6.5), y1: Y(y + 4.5), x2: X(x + 14), y2: Y(y + 4.5), "class": "int" }); }
+    T(g, "CASA " + (n < 10 ? "0" : "") + n, x + 7, y + 5.6, "hn"); T(g, smart ? "SMART" : "NORMAL", x + 7, y + 3.2, "ht"); hp[n] = T(g, "", x + 7, y + 1.3, "hp");
+    places["h" + n] = { t: "Casa " + (n < 10 ? "0" : "") + n + (smart ? " – smart" : " – normal"), b: smart ? "Smart" : "Normal", x: smart ? HSMART : HNORM, link: smart };
+    pn["h" + n] = g; houseLit[n] = false;
+    g.addEventListener("click", function () { pick("h" + n); });
+    g.addEventListener("keydown", function (e) { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); pick("h" + n); } });
+  }
+  rows.forEach(function (ly, i) { house(i + 1, 28, ly + 1.5); house(i + 6, 58, ly + 1.5); });
+
+  function place(id, x, y, w, h, title, label, txt, lx, ly) {
+    var g = el(svg, "g", { "class": "place", tabindex: 0, role: "button", "aria-label": title });
+    R(g, x, y, w, h, "b"); T(g, label, lx, ly, "room");
+    places[id] = { t: title, b: "Local", x: txt }; pn[id] = g;
+    g.addEventListener("click", function () { pick(id); });
+    g.addEventListener("keydown", function (e) { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); pick(id); } });
+  }
+  place("g1", 48.5, 1.5, 3, 5, "Guarita 1 – acesso principal", "G1", "Portaria principal com duas faixas (entrada e saída). Tem leitor facial em cada faixa, cancelas automáticas, painel do porteiro e liberação manual para visitantes.", 50, 8.6);
+  place("g2", 48.5, 84, 3, 5, "Guarita 2 – serviço e saída", "G2", "Portaria de serviço, para entregas, prestadores e saída de moradores. Também tem leitor facial, cancela e painel do porteiro.", 50, 82.2);
+  place("mk", 60, 5, 24, 10, "Mercadinho inteligente", "MERCADINHO SMART", "Mercado pequeno para os moradores. Um sensor de presença na porta detecta o cliente: a luz e o ar-condicionado ligam quando ele chega e desligam depois de 5 minutos sem ninguém.", 72, 13.8);
+  el(svg, "line", { x1: X(60), y1: Y(11.5), x2: X(60), y2: Y(8.5), stroke: "var(--smart)", "stroke-width": 5 });
+
+  /* dispositivos */
+  var D = [], by = {}, nd = {}, st = {};
+  function add(k, t, i, x, y, n, hw, p, r) { D.push({ k: k, t: t, i: i, x: x, y: y, n: n, hw: hw, p: p, r: r }); }
+  add("cam_g1e","s","📷",47,5,"Leitor facial – Portaria 1 (entrada)","Câmera IP com reconhecimento facial (borda) ou Jetson + OpenCV","PoE / RTSP / MQTT","Identifica o morador e libera a cancela; rosto desconhecido alerta a guarita.");
+  add("cam_g1s","s","📷",53,5,"Leitor facial – Portaria 1 (saída)","Câmera IP com reconhecimento facial","PoE / RTSP / MQTT","Reconhece o morador que sai e libera a cancela de saída.");
+  add("cam_g2","s","📷",47,86,"Leitor facial – Portaria 2","Câmera IP com reconhecimento facial","PoE / RTSP / MQTT","Controla entregas e prestadores; moradores cadastrados passam direto.");
+  add("pir_mk","s","🚶",61.5,10,"Sensor de presença – porta do mercadinho","mmWave LD2410 ou PIR + ESP32","Wi-Fi / MQTT","Detecta o cliente chegando e liga a luz e o ar; desliga após 5 min sem presença.");
+  add("temp_mk","s","🌡️",81.5,7,"Temperatura das geladeiras","Sonda DS18B20 + ESP32","Wi-Fi / MQTT","Monitora as geladeiras e avisa o dono se a temperatura sair da faixa.");
+  add("canc_g1e","a","🚧",47,8,"Cancela – Portaria 1 (entrada)","Motor de cancela com controladora e relé","RS-485 / MQTT","Abre após o reconhecimento ou a liberação do porteiro e fecha após a passagem.");
+  add("canc_g1s","a","🚧",53,8,"Cancela – Portaria 1 (saída)","Motor de cancela com controladora e relé","RS-485 / MQTT","Abre quando o morador é reconhecido na saída.");
+  add("canc_g2","a","🚧",47,83,"Cancela – Portaria 2","Motor de cancela com controladora e relé","RS-485 / MQTT","Abre após o reconhecimento ou a liberação do porteiro.");
+  add("luz_mk","a","💡",68,10,"Iluminação do mercadinho","Relé ou dimmer + fitas LED","Wi-Fi / MQTT","Liga quando um cliente chega e apaga sem presença.");
+  add("ac_mk","a","❄️",79,12,"Ar-condicionado do mercadinho","Controle IR (ESP32 + LED IR)","Wi-Fi / IR","Liga junto com a luz para o cliente entrar em ambiente climatizado.");
+  D.forEach(function (d) {
+    by[d.k] = d; if (d.t === "a") st[d.k] = false;
+    var g = el(svg, "g", { "class": "dev " + d.t, tabindex: 0, role: "button", "aria-label": d.n, transform: "translate(" + X(d.x) + " " + Y(d.y) + ")" });
+    el(g, "title", {}, d.n); el(g, "circle", { r: 16 }); el(g, "text", { x: 0, y: 1 }, d.i);
+    g.addEventListener("click", function (e) { e.stopPropagation(); pick(d.k); });
+    g.addEventListener("keydown", function (e) { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); pick(d.k); } });
+    nd[d.k] = g;
+  });
+
+  /* painel */
+  var info = document.getElementById("info");
+  document.getElementById("chips").innerHTML = '<span class="chip">Casas <b>10</b> (8 smart, 2 normais)</span><span class="chip">Guaritas <b>2</b></span><span class="chip">Leitores faciais <b>3</b></span><span class="chip">Mercadinho <b>1</b></span>';
+  function clearHit() { Object.keys(nd).forEach(function (k) { nd[k].classList.remove("hit", "sel"); }); Object.keys(pn).forEach(function (k) { pn[k].classList.remove("sel"); }); }
+  function homeText() { clear(info); info.appendChild(mk("h3", "Como usar")); info.appendChild(mk("p", "Clique em uma casa, em uma guarita, no mercadinho ou em um dispositivo para ver os detalhes. Os botões de cenário simulam a chegada de moradores, visitantes e clientes.")); }
+  function row(dl, k, v) { dl.appendChild(mk("dt", k)); dl.appendChild(mk("dd", v)); }
+  function pick(k) {
+    clearHit(); sel = k; clear(info); var dl = mk("dl");
+    if (by[k]) {
+      var d = by[k]; nd[k].classList.add("sel");
+      info.appendChild(mk("span", d.t === "s" ? "SENSOR" : "ATUADOR", "badge " + d.t)); info.appendChild(mk("h3", d.i + " " + d.n));
+      row(dl, "Hardware sugerido", d.hw); row(dl, "Comunicação", d.p); row(dl, "Função", d.r);
+      if (d.t === "a") row(dl, "Estado agora", st[k] ? "ligado ou aberto" : "desligado ou fechado");
+    } else {
+      var p = places[k]; pn[k].classList.add("sel");
+      info.appendChild(mk("span", p.b.toUpperCase(), "badge m")); info.appendChild(mk("h3", p.t)); info.appendChild(mk("p", p.x));
+      if (k.charAt(0) === "h") {
+        row(dl, "Preço estimado", brl(price(p.link)) + (p.link ? " (casa smart, mais cara)" : " (casa comum)"));
+        if (p.link) { row(dl, "Dispositivos smart", SMARTDEV); row(dl, "Comandos automáticos", AUTOCMD); row(dl, "Comandos de voz e app", VOICE); }
+        else { row(dl, "Dispositivos smart", "Nenhum. A casa usa interruptores e controles manuais."); row(dl, "Comandos", "Manuais, nos interruptores e controles remotos, sem rotinas automáticas."); row(dl, "Upgrade opcional", "Virar casa smart com o kit de " + brl(KITSUM) + ", já com instalação."); }
+        row(dl, "Acesso ao condomínio", "Reconhecimento facial nas guaritas.");
+      }
+      if (p.link) { var a = mk("a", "Ver o projeto da casa smart"); a.href = "https://claude.ai/artifact/KjB5tvJXgjT8LMNVsKaw6o"; a.target = "_blank"; a.rel = "noopener"; info.appendChild(a); }
+    }
+    info.appendChild(dl);
+  }
+
+  /* estado */
+  var stBox = document.getElementById("states");
+  function lbl(k, on) { return on ? (k.indexOf("canc") === 0 ? "aberta" : "ligado") : (k.indexOf("canc") === 0 ? "fechada" : "desligado"); }
+  function paint() {
+    clear(stBox);
+    D.filter(function (d) { return d.t === "a"; }).forEach(function (d) {
+      nd[d.k].classList.toggle("lit", st[d.k]); stBox.appendChild(mk("span", d.n + ": " + lbl(d.k, st[d.k]), "st" + (st[d.k] ? " on" : "")));
+    });
+    Object.keys(houseLit).forEach(function (n) { pn["h" + n].classList.toggle("lit", houseLit[n]); });
+    stBox.appendChild(mk("span", "Casa 03: " + (houseLit[3] ? "luz acesa, porta destrancada" : "apagada, porta trancada"), "st" + (houseLit[3] ? " on" : "")));
+  }
+
+  /* cenários */
+  var S = [
+    { n: "Morador chega (Casa 03)", s: ["cam_g1e"], set: { canc_g1e: true }, h: { 3: true }, auto: ["canc_g1e"],
+      t: "O leitor facial reconhece o morador na Portaria 1 e a cancela abre. O hub da Casa 03 recebe o aviso: a porta destranca e a luz da sala acende." },
+    { n: "Visitante na Portaria 1", s: ["cam_g1e"], set: { canc_g1e: true }, auto: ["canc_g1e"],
+      t: "O rosto não está cadastrado, então a cancela fica fechada e a guarita recebe o alerta. O porteiro confirma com o morador e libera a cancela manualmente (ela abre por alguns segundos)." },
+    { n: "Entrega na Portaria 2", s: ["cam_g2"], set: { canc_g2: true }, auto: ["canc_g2"],
+      t: "A entrega entra pela Portaria 2. O porteiro valida o cadastro do prestador e a cancela abre por alguns segundos." },
+    { n: "Cliente chega ao mercadinho", s: ["pir_mk"], set: { luz_mk: true, ac_mk: true },
+      t: "O sensor de presença na porta detecta o cliente: a luz e o ar-condicionado do mercadinho ligam." },
+    { n: "Cliente sai do mercadinho", s: ["pir_mk"], set: { luz_mk: false, ac_mk: false },
+      t: "Depois de 5 minutos sem presença, o hub desliga a luz e o ar-condicionado para economizar energia." },
+    { n: "Morador sai (Casa 03)", s: ["cam_g1s"], set: { canc_g1s: true }, h: { 3: false }, auto: ["canc_g1s"],
+      t: "O leitor facial reconhece o morador na saída e a cancela abre. A Casa 03 apaga tudo, desliga TV e ares e tranca a porta." }
+  ];
+  var sc = document.getElementById("scenes"), timers = [];
+  S.forEach(function (x, i) { var b = mk("button", (i + 1) + ". " + x.n); b.type = "button"; b.addEventListener("click", function () { run(i); }); sc.appendChild(b); });
+  var rs = mk("button", "Reiniciar"); rs.type = "button"; sc.appendChild(rs);
+  function reset() { timers.forEach(clearTimeout); timers = []; Object.keys(st).forEach(function (k) { st[k] = false; }); Object.keys(houseLit).forEach(function (n) { houseLit[n] = false; }); clearHit(); paint(); homeText(); }
+  rs.addEventListener("click", reset);
+
+  function run(i) {
+    var x = S[i], ch = [];
+    clearHit(); for (var k in x.set) { if (st[k] !== x.set[k]) ch.push(k); st[k] = x.set[k]; }
+    if (x.h) for (var n in x.h) houseLit[n] = x.h[n];
+    x.s.concat(Object.keys(x.set)).forEach(function (k) { nd[k].classList.add("hit"); });
+    paint(); clear(info); info.appendChild(mk("h3", x.n)); info.appendChild(mk("p", x.t));
+    var dl = mk("dl"); row(dl, "Sensores acionados", x.s.map(function (k) { return by[k].n; }).join("; "));
+    row(dl, "Atuadores", Object.keys(x.set).map(function (k) { return by[k].n + " → " + lbl(k, x.set[k]); }).join("; ")); info.appendChild(dl);
+    (x.auto || []).forEach(function (k) { timers.push(setTimeout(function () { st[k] = false; paint(); }, 4000)); });
+  }
+
+  /* tabela */
+  var tb = document.getElementById("rows");
+  D.forEach(function (d) {
+    var tr = mk("tr", "", "clk"); [d.t === "s" ? "Sensor" : "Atuador", d.i + " " + d.n, d.hw, d.p].forEach(function (v) { tr.appendChild(mk("td", v)); });
+    tr.addEventListener("click", function () { pick(d.k); window.scrollTo({ top: svg.getBoundingClientRect().top + window.scrollY - 70, behavior: "smooth" }); }); tb.appendChild(tr);
+  });
+  document.getElementById("theme").addEventListener("click", function () {
+    var r = document.documentElement, dark = r.dataset.theme ? r.dataset.theme === "dark" : window.matchMedia("(prefers-color-scheme: dark)").matches;
+    r.dataset.theme = dark ? "light" : "dark";
+  });
+  var SMARTDEV = "Sensores (12): presença na sala, cozinha, corredor, suíte, banheiro da suíte, quarto e banheiro social; ocupação do sofá e das duas camas; porta; gás.\nAtuadores (11): luzes (sala, cozinha, corredor, suíte, banheiro da suíte, quarto e banheiro social), TV, ar da sala, ar da suíte e fechadura.";
+  var AUTOCMD = "• Entrou na sala, na cozinha ou no quarto: liga a luz.\n• Sentou no sofá: liga a TV.\n• Deitou na cama: apaga a luz do cômodo.\n• Chegou em casa: destranca a porta e acende a luz da sala.\n• Saiu de casa: apaga tudo, desliga TV e ares e tranca a porta.";
+  var VOICE = "• “Cheguei”: destranca a porta e acende a luz da sala.\n• “Boa noite”: apaga as luzes, desliga TV e ares e tranca a porta.\n• “Modo cinema”: liga a TV e apaga a luz da sala.\n• “Liberar visita”: avisa a portaria para abrir a cancela.\n• “Ligar o ar da suíte”.";
+  /* orçamento */
+  var KIT = [["Hub: Raspberry Pi 5, fonte, SSD e dongle Zigbee", 1800], ["7 sensores de presença (PIR ou mmWave)", 840], ["3 sensores de ocupação (sofá e 2 camas)", 1050], ["Sensor de porta e sensor de gás", 230], ["7 dimmers e relés de luz", 1260], ["Controles IR da TV e de 2 ares-condicionados", 550], ["Fechadura eletrônica", 1200], ["Rede e infraestrutura elétrica (cabeamento e quadro)", 2500], ["Instalação e configuração", 3500]];
+  var KITSUM = KIT.reduce(function (s, r) { return s + r[1]; }, 0);
+  function val(id) { return parseFloat(document.getElementById(id).value) || 0; }
+  function brl(v) { return v.toLocaleString("pt-BR", { style: "currency", currency: "BRL", maximumFractionDigits: 0 }); }
+  function price(smart) { return val(smart ? "b_smart" : "b_norm"); }
+  var cards = document.getElementById("cards");
+  function card(t, v, s, c) { var d = mk("div", "", "card" + (c ? " hi" : "")); d.appendChild(mk("small", t)); d.appendChild(mk("b", v)); d.appendChild(mk("small", s)); cards.appendChild(d); }
+  function budget() {
+    var pnorm = price(false), ps = price(true), dif = ps - pnorm; clear(cards);
+    card("Casa normal", brl(pnorm), "sem automação", false);
+    card("Casa smart home", brl(ps), "com automação completa (kit de " + brl(KITSUM) + ")", true);
+    card("Diferença", "+" + brl(dif), "a casa smart sai " + (pnorm ? (dif / pnorm * 100).toFixed(1).replace(".", ",") : "0") + " % mais cara", false);
+    card("Condomínio (10 casas)", brl(8 * ps + 2 * pnorm), "8 smart e 2 normais", false);
+    var c = document.getElementById("chips"), o = document.getElementById("pchip");
+    if (!o) { o = mk("span", "", "chip"); o.id = "pchip"; c.appendChild(o); }
+    o.textContent = "Casa smart: " + brl(ps) + " · normal: " + brl(pnorm);
+    Object.keys(hp).forEach(function (n) { hp[n].textContent = "R$ " + Math.round(price(n != 4 && n != 9) / 1000) + " mil"; });
+  }
+  var kt = document.getElementById("kit");
+  KIT.forEach(function (r) { var tr = mk("tr"); tr.appendChild(mk("td", r[0])); tr.appendChild(mk("td", brl(r[1]))); kt.appendChild(tr); });
+  var tf = mk("tr"); tf.appendChild(mk("td", "Total do kit smart por casa")); tf.appendChild(mk("td", brl(KITSUM))); tf.style.fontWeight = "700"; kt.appendChild(tf);
+  ["b_smart", "b_norm"].forEach(function (id) { document.getElementById(id).addEventListener("input", budget); });
+  budget();
+  paint(); homeText();
+})();
+</script>
+</body>
+</html>
